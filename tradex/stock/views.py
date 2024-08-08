@@ -36,10 +36,14 @@ def get_user_stocks(request: Request):
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
 def get_stocks(request: Request):
+
     try:
-        stocks = Stock.objects.all().order_by("-created_at").distinct().only(
-            "name", "price", "created_at")
+        latest_stock = Stock.objects.filter(
+            name=OuterRef('name')).order_by('-created_at')
+        stocks = Stock.objects.filter(id=Subquery(latest_stock.values('id')[:1])).only(
+            'name', 'price', 'created_at', 'id')
         serializer = StockSerializer(stocks, many=True)
         return response_structure("Success", status.HTTP_200_OK, serializer.data)
+
     except Exception:
         return response_structure("Something went wrong", status.HTTP_500_INTERNAL_SERVER_ERROR)

@@ -5,7 +5,7 @@ from .models import UserStock, Stock
 class StockSerializer(ModelSerializer):
     class Meta:
         model = Stock
-        fields = ["name", "price", "created_at"]
+        fields = ["name", "price", "created_at", "id"]
 
 
 class UserStockSerializer(ModelSerializer):
