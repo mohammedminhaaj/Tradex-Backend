@@ -43,7 +43,8 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
     'rest_framework.authtoken',
-    "user.apps.UserConfig",
+    'user.apps.UserConfig',
+    'stock.apps.StockConfig',
 ]
 
 MIDDLEWARE = [
@@ -133,4 +134,4 @@ FILE_UPLOAD_MAX_MEMORY_SIZE = 80 * 1024 * 1024
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-CORS_ALLOW_ALL_ORIGINS = True   
+CORS_ALLOW_ALL_ORIGINS = True
