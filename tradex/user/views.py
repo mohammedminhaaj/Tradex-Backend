@@ -7,6 +7,7 @@ from django.contrib.auth.hashers import check_password
 from rest_framework.exceptions import AuthenticationFailed
 from tradex.utils import response_structure
 from rest_framework.authtoken.models import Token
+from tradex.utils import SERVER_ERROR_MESSAGE
 
 
 @api_view(["POST"])
@@ -30,7 +31,7 @@ def login_user(request: Request):
         except (User.DoesNotExist, AuthenticationFailed) as e:
             return response_structure("Invalid credentials", status.HTTP_404_NOT_FOUND if type(e) == User.DoesNotExist else status.HTTP_400_BAD_REQUEST)
         except Exception:
-            return response_structure("Something went wrong", status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return response_structure(SERVER_ERROR_MESSAGE, status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     else:
         return response_structure("Please fix the form errors", status.HTTP_400_BAD_REQUEST, serializer.errors)

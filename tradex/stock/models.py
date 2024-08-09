@@ -32,7 +32,9 @@ class Stock(AuditModel):
 class UserStock(AuditModel):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     stock = models.ForeignKey(Stock, on_delete=models.CASCADE)
-    quantity = models.IntegerField(default=1)
+    quantity = models.IntegerField(default=0)
+    invested_amount = models.DecimalField(
+        max_digits=8, decimal_places=2, default=0)
 
     def __str__(self) -> str:
         return f"{self.user.username} - {self.stock.name}"
