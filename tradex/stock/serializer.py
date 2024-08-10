@@ -24,7 +24,7 @@ class UserStockSerializer(ModelSerializer):
 
     class Meta:
         model = UserStock
-        fields = ["stock", "latest_price", "quantity", "id"]
+        fields = ["stock", "latest_price", "quantity", "id", "invested_amount"]
 
 
 class StockDetailsSerializer(ModelSerializer):

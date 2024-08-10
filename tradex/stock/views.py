@@ -9,12 +9,20 @@ from rest_framework import status
 from .models import Stock
 from django.db.models import OuterRef, Subquery, DecimalField
 from tradex.utils import SERVER_ERROR_MESSAGE, SUCCESS_MESSAGE
+from django.core.paginator import Paginator
 
 
 @api_view(["GET"])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
 def get_user_stocks(request: Request):
+    page = request.query_params.get("page", 1)
+    limit = request.query_params.get("limit", 9999)
+    search = request.query_params.get("search", None)
+
+    search_term: dict[str, str] | dict[None] = {
+        "stock__name__icontains": search} if search else {}
+
     try:
         # Subquery to get the latest price for the stock name
         latest_stock_price = Stock.objects.filter(
@@ -26,10 +34,24 @@ def get_user_stocks(request: Request):
                 latest_stock_price,
                 output_field=DecimalField(max_digits=12, decimal_places=6)
             )
-        ).select_related("stock").only("stock__name", "stock__price", "quantity", "id", "stock_id", "stock__created_at")
+        ).select_related("stock").only(
+            "stock__name",
+            "stock__price",
+            "quantity",
+            "id",
+            "invested_amount",
+            "stock_id",
+            "stock__created_at"
+        ).filter(**search_term)
+
         serializer = UserStockSerializer(user_stocks, many=True)
-        return response_structure(SUCCESS_MESSAGE, status.HTTP_200_OK, serializer.data)
-    except Exception:
+
+        paginator = Paginator(serializer.data, int(limit))
+        paginated_results = paginator.get_page(int(page)).object_list
+
+        return response_structure(SUCCESS_MESSAGE, status.HTTP_200_OK, paginated_results, count=paginator.count)
+    except Exception as e:
+        print(e)
         return response_structure(SERVER_ERROR_MESSAGE, status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
@@ -37,13 +59,21 @@ def get_user_stocks(request: Request):
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
 def get_stocks(request: Request):
+    page = request.query_params.get("page", 1)
+    limit = request.query_params.get("limit", 10)
+    search = request.query_params.get("search", None)
+
+    search_term: dict[str, str] | dict[None] = {
+        "name__icontains": search} if search else {}
     try:
         latest_stock = Stock.objects.filter(
             name=OuterRef('name')).order_by('-created_at').only("name", "id")
         stocks = Stock.objects.filter(id=Subquery(latest_stock.values('id')[:1])).only(
-            'name', 'price', 'created_at', 'id')
+            'name', 'price', 'created_at', 'id').filter(**search_term)
         serializer = StockSerializer(stocks, many=True)
-        return response_structure(SUCCESS_MESSAGE, status.HTTP_200_OK, serializer.data)
+        paginator = Paginator(serializer.data, int(limit))
+        paginated_results = paginator.get_page(int(page)).object_list
+        return response_structure(SUCCESS_MESSAGE, status.HTTP_200_OK, paginated_results, count=paginator.count)
     except Exception:
         return response_structure(SERVER_ERROR_MESSAGE, status.HTTP_500_INTERNAL_SERVER_ERROR)
 

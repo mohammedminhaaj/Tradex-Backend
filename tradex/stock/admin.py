@@ -11,4 +11,4 @@ class StockAdmin(admin.ModelAdmin):
 
 @admin.register(UserStock)
 class UserStockAdmin(admin.ModelAdmin):
-    list_display = ['user', 'stock', 'quantity']
+    list_display = ['user', 'stock', 'quantity', 'invested_amount']
