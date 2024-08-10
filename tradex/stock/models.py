@@ -46,3 +46,13 @@ class UserStock(AuditModel):
         ordering = ['-id']
         constraints = [models.UniqueConstraint(
             fields=("user", "stock"), name="unique_user_stock_mapping")]
+        
+class StockDataAudit(AuditModel):
+    file_name = models.CharField(max_length=256, unique=True, db_index=True)
+
+    class Meta:
+        verbose_name = 'Stock Data Audit'
+        verbose_name_plural = 'Stock Data Audits'
+        db_table = 'stock_data_audit'
+        ordering = ['-id']
+

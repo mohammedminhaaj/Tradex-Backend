@@ -50,8 +50,7 @@ def get_user_stocks(request: Request):
         paginated_results = paginator.get_page(int(page)).object_list
 
         return response_structure(SUCCESS_MESSAGE, status.HTTP_200_OK, paginated_results, count=paginator.count)
-    except Exception as e:
-        print(e)
+    except Exception:
         return response_structure(SERVER_ERROR_MESSAGE, status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
@@ -115,6 +114,5 @@ def modify_user_stock(request: Request, mode: str):
             return response_structure(SUCCESS_MESSAGE, status.HTTP_200_OK)
         else:
             return response_structure("Failed to update stock", status.HTTP_400_BAD_REQUEST, serializer.errors)
-    except Exception as e:
-        print(e)
+    except Exception:
         return response_structure(SERVER_ERROR_MESSAGE, status.HTTP_500_INTERNAL_SERVER_ERROR)

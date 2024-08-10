@@ -46,6 +46,9 @@ class ModifyUserStockSerializer(Serializer):
     name = CharField(max_length=10)
 
     def validate_quantity(self, value):
+        if value <= 0:
+            raise ValidationError(
+                {"quantity": "Quantity cannot have value less than 1."})
         if self.mode == "sell" and value > self.instance.quantity:
             raise ValidationError(
                 {"quantity": "Cannot sell more than you own."})
