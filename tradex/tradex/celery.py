@@ -17,6 +17,7 @@ app.config_from_object('django.conf:settings', namespace='CELERY')
 # Load task modules from all registered Django apps.
 app.autodiscover_tasks()
 
+# Configuration for scheduling celery beat
 app.conf.beat_schedule = {
     "periodic": {
         "task": "stock.tasks.update_stocks",
