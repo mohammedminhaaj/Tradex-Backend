@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.urls.resolvers import URLPattern
-from .models import Stock, UserStock
+from .models import Stock, UserStock, StockDataAudit
 from django.urls import path
 from .utils import StockDataGenerator
 from django.contrib import messages
@@ -27,17 +27,23 @@ class StockAdmin(admin.ModelAdmin):
 
     def generate_random_stocks(self, request):
         generator = StockDataGenerator()
-        generator.generate_random_stocks()
-        messages.success(request, "File created successfully")
-        return redirect(request.META.get('HTTP_REFERER'))
+        file_path = generator.generate_random_stocks()
+        messages.success(
+            request, f"File generated and saved to /media ({file_path})")
+        return redirect("..")
 
     def generate_existing_stocks(self, request):
         generator = StockDataGenerator()
-        generator.generate_random_stocks(use_existing_names=True)
-        messages.success(request, "File created successfully")
-        return redirect(request.META.get('HTTP_REFERER'))
+        file_path = generator.generate_random_stocks(use_existing_names=True)
+        messages.success(
+            request, f"File generated and saved to /media ({file_path})")
+        return redirect("..")
 
 
 @admin.register(UserStock)
 class UserStockAdmin(admin.ModelAdmin):
     list_display = ['user', 'stock', 'quantity', 'invested_amount']
+
+@admin.register(StockDataAudit)
+class StockDataAuditAdmin(admin.ModelAdmin):
+    list_display = ["file_name"]

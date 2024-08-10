@@ -28,11 +28,7 @@ SECRET_KEY = getenv("DJANGO_SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [
-    "127.0.0.1",
-    "172.16.8.202",
-    "localhost"
-]
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -47,6 +43,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
     'rest_framework.authtoken',
+    'django_celery_results',
     'user.apps.UserConfig',
     'stock.apps.StockConfig',
 ]
@@ -139,3 +136,9 @@ FILE_UPLOAD_MAX_MEMORY_SIZE = 80 * 1024 * 1024
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ALLOW_ALL_ORIGINS = True
+
+#CELERY SETTINGS
+
+CELERY_TIMEZONE = "UTC"
+CELERY_BROKER_URL = "redis://127.0.0.1:6379/0"
+CELERY_RESULT_BACKEND = 'django-db'
